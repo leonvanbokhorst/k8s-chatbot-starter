@@ -1,0 +1,19 @@
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+data:
+  KAFKA_BOOTSTRAP: "rp-0.rp.lab.svc.cluster.local:9092"
+  QDRANT_URL: "http://qdrant.lab.svc.cluster.local:6333"
+  OLLAMA_URL: "http://ollama.lab.svc.cluster.local:11434"
+  MODEL: "llama3.1:8b-instruct-q4_K_M"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: app-secrets
+type: Opaque
+stringData:
+  KAFKA_USERNAME: ""
+  KAFKA_PASSWORD: ""

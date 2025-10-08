@@ -1,0 +1,28 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: responder
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: responder } }
+  template:
+    metadata: { labels: { app: responder } }
+    spec:
+      containers:
+      - name: responder
+        image: responder:0.1.0
+        envFrom:
+        - configMapRef: { name: app-config }
+        - secretRef: { name: app-secrets }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: responder
+spec:
+  selector: { app: responder }
+  ports:
+  - name: http
+    port: 80
+    targetPort: 8000

@@ -1,0 +1,17 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: memory
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: memory } }
+  template:
+    metadata: { labels: { app: memory } }
+    spec:
+      containers:
+      - name: memory
+        image: memory:0.1.0
+        envFrom:
+        - configMapRef: { name: app-config }
+        - secretRef: { name: app-secrets }
