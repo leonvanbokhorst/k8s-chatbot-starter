@@ -29,7 +29,7 @@ Even perfect YAML melts when the cluster mood swings. Observability keeps you ca
 1. Tune probes & resources
 
    - Update `k8s/gateway.yaml`, `k8s/responder.yaml`, and `k8s/memory.yaml` to include readiness/liveness probes and resource requests/limits.
-   - Deploy and observe `kubectl describe pod` for probe status.
+   - New readiness endpoint `/ready` checks Kafka connectivity and worker state; liveness remains `/health`.
 
 2. Stream logs & exec
 
@@ -37,6 +37,8 @@ Even perfect YAML melts when the cluster mood swings. Observability keeps you ca
    kubectl logs deploy/gateway -f
    kubectl exec deploy/gateway -- env | grep APP
    ```
+
+   - Pods also write rotating logs under `/var/log/app/` (e.g., `gateway.log`, `responder.log`, `memory.log`) for deeper inspection (`kubectl exec` + `tail`).
 
 3. Watch events
 

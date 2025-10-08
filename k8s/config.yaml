@@ -10,6 +10,7 @@ data:
   MODEL: "llama3.1:8b-instruct-q4_K_M"
   EMBED_MODEL: "bge-m3"
   EMBED_DIM: "1024"
+  LOG_PATH: "/var/log/app/service.log"
 ---
 apiVersion: v1
 kind: Secret

@@ -34,6 +34,20 @@ curl -X POST http://chat.local.test/chat -H 'Content-Type: application/json' \
 curl -N http://chat.local.test/stream?session_id=demo
 ```
 
+## UI and observability
+
+- Visit `http://chat.local.test/` to use the built-in dojo chat UI (requires ingress port-forward or DNS setup).
+- Readiness endpoints: `GET /ready` on gateway/responder/memory ensures Kafka topics and workers are active.
+- Logs write to `/var/log/app/*.log` inside each container (rotating 5MB), and also emit to stdout for `kubectl logs`.
+
+To forward ingress locally:
+
+```bash
+kubectl -n ingress-nginx port-forward svc/ingress-ingress-nginx-controller 8080:80
+curl -X POST http://chat.local.test/chat --resolve chat.local.test:80:127.0.0.1 \
+  -H 'Content-Type: application/json' -d '{"session_id":"demo","text":"Hi"}'
+```
+
 If you run Ollama locally on your host first... the responder will call it inside the cluster via the `ollama` Service.
 
 ```bash

@@ -28,7 +28,7 @@ spec:
           initialDelaySeconds: 10
           periodSeconds: 10
         readinessProbe:
-          httpGet: { path: /health, port: 8000 }
+          httpGet: { path: /ready, port: 8000 }
           initialDelaySeconds: 3
           periodSeconds: 5
 ---
