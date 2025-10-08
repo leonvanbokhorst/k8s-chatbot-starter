@@ -55,7 +55,7 @@ All previous modules were sparring practice. Now you assemble the full dojo chat
 5. Memory worker
 
    - Deploy `k8s/memory.yaml`.
-   - Consumes both `user_messages` and `model_responses`, computes embeddings, upserts into Qdrant.
+   - Consumes both `user_messages` and `model_responses`, calls Ollama embeddings (`EMBED_MODEL`), upserts into Qdrant.
    - Confirm access to Qdrant service.
 
 6. Ingress & frontend test

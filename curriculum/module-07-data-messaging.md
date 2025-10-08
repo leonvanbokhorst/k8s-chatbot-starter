@@ -96,6 +96,7 @@ The capstone chatbot relies on streaming messages and vector search. Running Kaf
 - Strimzi docs — https://strimzi.io/docs/
 - Qdrant docs — https://qdrant.tech/documentation/
 - Kafka with kcat — https://github.com/edenhill/kcat
+- Ollama embeddings API — https://github.com/ollama/ollama/blob/main/docs/api.md#generate-embeddings
 
 ## Deliverable
 

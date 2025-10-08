@@ -8,6 +8,8 @@ data:
   QDRANT_URL: "http://qdrant.lab.svc.cluster.local:6333"
   OLLAMA_URL: "http://ollama.lab.svc.cluster.local:11434"
   MODEL: "llama3.1:8b-instruct-q4_K_M"
+  EMBED_MODEL: "bge-m3"
+  EMBED_DIM: "1024"
 ---
 apiVersion: v1
 kind: Secret
