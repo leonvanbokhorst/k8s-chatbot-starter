@@ -7,7 +7,7 @@ data:
   KAFKA_BOOTSTRAP: "rp-0.rp.lab.svc.cluster.local:9092"
   QDRANT_URL: "http://qdrant.lab.svc.cluster.local:6333"
   OLLAMA_URL: "http://ollama.lab.svc.cluster.local:11434"
-  MODEL: "llama3.1:8b-instruct-q4_K_M"
+  MODEL: "phi4"
   EMBED_MODEL: "bge-m3"
   EMBED_DIM: "1024"
   LOG_PATH: "/var/log/app/service.log"
