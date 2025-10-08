@@ -3,6 +3,10 @@ import os, json, asyncio, math, time, hashlib
 from aiokafka import AIOKafkaConsumer, AIOKafkaProducer
 from qdrant_client import QdrantClient
 from qdrant_client.http.models import Distance, VectorParams, PointStruct
+from fastapi import FastAPI
+from fastapi.responses import JSONResponse
+import uvicorn
+from contextlib import suppress
 
 BOOTSTRAP = os.getenv("KAFKA_BOOTSTRAP", "localhost:9092")
 QDRANT_URL = os.getenv("QDRANT_URL", "http://localhost:6333")
@@ -12,6 +16,7 @@ DIM=256
 TOPIC_IN_A = "user_messages"
 TOPIC_IN_B = "model_responses"
 TOPIC_OUT = "memory_events"
+worker_task = None
 
 def hash_embed(text: str, dim: int = DIM):
     # naive stable hashing embedder
@@ -23,7 +28,7 @@ def hash_embed(text: str, dim: int = DIM):
     norm = math.sqrt(sum(v*v for v in vec)) or 1.0
     return [v / norm for v in vec]
 
-async def main():
+async def main_loop():
     client = QdrantClient(url=QDRANT_URL)
     try:
         client.get_collection(COLLECTION)
@@ -50,5 +55,23 @@ async def main():
     finally:
         await consumer.stop(); await producer.stop()
 
+app = FastAPI()
+
+@app.get("/health")
+async def health():
+    return JSONResponse({"ok": True})
+
+@app.on_event("startup")
+async def startup_worker():
+    global worker_task
+    worker_task = asyncio.create_task(main_loop())
+
+@app.on_event("shutdown")
+async def shutdown_worker():
+    if worker_task:
+        worker_task.cancel()
+        with suppress(asyncio.CancelledError):
+            await worker_task
+
 if __name__ == "__main__":
-    asyncio.run(main())
+    uvicorn.run("worker:app", host="0.0.0.0", port=8000)

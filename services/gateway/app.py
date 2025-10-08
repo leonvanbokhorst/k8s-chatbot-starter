@@ -1,5 +1,6 @@
 
 import os, json, uuid
+from contextlib import suppress
 from fastapi import FastAPI
 from pydantic import BaseModel
 from aiokafka import AIOKafkaProducer, AIOKafkaConsumer
@@ -8,6 +9,7 @@ from sse_starlette.sse import EventSourceResponse
 BOOTSTRAP = os.getenv("KAFKA_BOOTSTRAP", "localhost:9092")
 TOPIC_IN = "user_messages"
 TOPIC_OUT = "model_responses"
+APP_GREETING = os.getenv("APP_GREETING", "Welcome to the dojo")
 
 app = FastAPI()
 producer = None
@@ -31,16 +33,19 @@ async def shutdown():
 async def health():
     return {"ok": True}
 
-@app.post("/api/chat")
+@app.get("/hello")
+async def hello():
+    return {"message": APP_GREETING}
+
+@app.post("/chat")
 async def chat(msg: ChatIn):
     key = msg.session_id.encode()
     payload = json.dumps({"session_id": msg.session_id, "text": msg.text, "id": str(uuid.uuid4())}).encode()
     await producer.send_and_wait(TOPIC_IN, value=payload, key=key)
     return {"status": "queued", "session_id": msg.session_id}
 
-@app.get("/api/stream")
+@app.get("/stream")
 async def stream(session_id: str):
-    # dedicated consumer group per connection
     group = f"gw-{uuid.uuid4()}"
     consumer = AIOKafkaConsumer(
         TOPIC_OUT,
@@ -61,6 +66,7 @@ async def stream(session_id: str):
                 if val.get("session_id") == session_id:
                     yield {"event": "message", "data": json.dumps(val)}
         finally:
-            await consumer.stop()
+            with suppress(Exception):
+                await consumer.stop()
 
     return EventSourceResponse(gen())
